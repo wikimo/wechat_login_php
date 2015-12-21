@@ -10,28 +10,28 @@ $appid = '';//
 $secret = '';//
 
 /**
-//验证 非法操作，跳转
+//validate if illegal，redirect
 */
-if ($code!=''&&$state===md5('idacker')) {
+if ($code!=''&&$state===md5('cmcmus')) {
     $url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid='.$appid.'&secret='.$secret.'&code='.$code.'&grant_type=authorization_code';
     //echo $url;
 }else{
 
     header("Location: http://".$_SERVER['HTTP_HOST']."/weixinsdk/index.php"); 
-    //确保重定向后，后续代码不会被执行 
+    //code not executed, if redirect
     die();
 }
 
 /**
-* @param curlAPI 发送请求
-* @param $url 设置请求
+* @param curlAPI send request
+* @param $url 
 */
 function curlAPI($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($ch, CURLOPT_HEADER, 0);
-    //解决报错 SSL certificate problem: unable to get local issuer certificate
+    //solve SSL certificate problem: unable to get local issuer certificate
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, FALSE);
 
@@ -45,7 +45,7 @@ function curlAPI($url){
     return $result;
 }
 /**
-* @param debugPre 调试
+* @param debugPre
 */
 function debugPre ($a){
     echo "<pre>";
@@ -53,7 +53,7 @@ function debugPre ($a){
     echo "</pre>";
 }
 
-//尝试加密
+//encryption
 function getAwardCheckCode() {
     $time = time();
     $key = "12345";
@@ -66,11 +66,11 @@ function get_password( $length = 8 ){
     return $str;
 }
 /**
-//获取 access_token
+//get access_token
 */
 $outputAPI = curlAPI($url);
 if (isset($outputAPI["access_token"])) {
-    //存入session
+    //setting session
     $_SESSION["access_token"] = $outputAPI['access_token'];
     $_SESSION["refresh_token"] = $outputAPI['refresh_token'];
     $_SESSION["scope"] = $outputAPI['scope'];
@@ -80,14 +80,14 @@ if (isset($outputAPI["access_token"])) {
     //debugPre($outputAPI);
 }
 /**
-//获取 页面刷新后 refresh_token
+// refresh_token
 */
 
 $refresh_url = 'https://api.weixin.qq.com/sns/oauth2/refresh_token?appid='.$appid.'&grant_type=refresh_token&refresh_token='.$_SESSION["refresh_token"];
 $refresh_API = curlAPI($refresh_url);
 
 if (isset($refresh_API["access_token"])) {
-    //更新session token
+    //updated session token
     $_SESSION["access_token"] = $refresh_API['access_token'];
     $_SESSION["refresh_token"] = $refresh_API['refresh_token'];
     $_SESSION["scope"] = $refresh_API['scope'];
@@ -97,7 +97,7 @@ if (isset($refresh_API["access_token"])) {
     //debugPre($refresh_API);
 }
 /**
-//验证授权凭证 access_token
+//validate access_token
 */
 $verify_url = 'https://api.weixin.qq.com/sns/auth?access_token='.$_SESSION["access_token"].'&openid='.$_SESSION["openid"];
 $verify_API = curlAPI($verify_url);
@@ -105,7 +105,7 @@ $verify_API = curlAPI($verify_url);
 
 if ($verify_API['errmsg']==='ok') {
     /**
-    //获取登陆用户个人信息
+    //get user info
     */
     $user_url = 'https://api.weixin.qq.com/sns/userinfo?access_token='.$_SESSION["access_token"].'&openid='.$_SESSION["openid"];
     $user_API = curlAPI($user_url);
@@ -128,25 +128,19 @@ if ($verify_API['errmsg']==='ok') {
     debugPre($verify_API);
     die();
 }
-
-
-
 ?>
 
 <html>
 <head>
-<title>已登录后操作</title>
+<title>IF User Login</title>
 <meta charset="utf-8">
 </head>
 <body>
 
-<h1>您好：<?=$nickname?></h1>
-<p><img src="<?=$headimgurl?>"> <?=$sex=='1'?'男':'女'?></p>
-<p data-id="<?=$unionid?>">来自于：<?=$country.$province.$city?></p>
+<h1>Hi：<?=$nickname?></h1>
+<p><img src="<?=$headimgurl?>"> <?=$sex=='1'?'Man':'Women'?></p>
+<p data-id="<?=$unionid?>">From：<?=$country.$province.$city?></p>
 <p data-openid="<?=$openid?>"><?=$privilege?></p>
 
 </body>
 </html>
-
-
-

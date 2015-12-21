@@ -1,4 +1,4 @@
-wechat_login_php
+wechat web login demo
 ================
 
-申请了微信开发者，获得了WEB的，AppID和AppSecret；用php制作了一个登陆demo
+must apply app in [open.weixin.qq.com](http://open.weixin.qq.com) [scope=snsapi_login],
